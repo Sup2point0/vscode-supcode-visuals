@@ -1,8 +1,8 @@
 {
-  "name": "kebab-caser",
-  "displayName": "kebab-case Renderer",
-  "description": "Displays identifiers in `kebab-case` (but keeps the underlying source code unmodified)",
-  "version": "0.0.1",
+  "name": "vscode-supcode-visuals",
+  "displayName": "supcode Visuals for VSCode",
+  "description": "supcode’s text displaying conventions for VSCode: `kebab-case` identifiers, half-spaced ` = `, and more!",
+  "version": "1.0.0",
   "publisher": "Sup#2.0",
   "engines": {
     "vscode": "^1.106.1"
@@ -12,7 +12,7 @@
     "Visualization"
   ],
   "activationEvents": [
-    "onLanguage:rust"
+    "onLanguage"
   ],
   "main": "./out/extension.js",
   "contributes": {

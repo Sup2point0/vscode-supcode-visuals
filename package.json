@@ -1,0 +1,38 @@
+{
+  "name": "kebab-caser",
+  "displayName": "kebab-case Renderer",
+  "description": "Displays identifiers in `kebab-case` (but keeps the underlying source code unmodified)",
+  "version": "0.0.1",
+  "publisher": "Sup#2.0",
+  "engines": {
+    "vscode": "^1.106.1"
+  },
+  "categories": [
+    "Formatters",
+    "Visualization"
+  ],
+  "activationEvents": [
+    "onLanguage:rust"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.106.1",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "22.x",
+    "typescript-eslint": "^8.46.3",
+    "eslint": "^9.39.1",
+    "typescript": "^5.9.3",
+    "@vscode/test-cli": "^0.0.12",
+    "@vscode/test-electron": "^2.5.2"
+  }
+}

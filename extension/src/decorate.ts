@@ -33,9 +33,13 @@ export function decorate(editor: vs.TextEditor): void
   let i = 0;
   let line_index = 0;
   let char_index = 0;
+
   let char_prev = undefined;
   let char = undefined;
   let char_next = source.at(0);
+
+  let ctx = [];
+  let paren_count = 0;
 
   while (true)
   {
@@ -69,6 +73,7 @@ export function decorate(editor: vs.TextEditor): void
       case "=":
         if (
           selected_lines.has(line_index)
+          || ctx.at(-1) !== "function"
           || char_prev !== " "
           || char_next !== " "
         ) break;
@@ -81,6 +86,24 @@ export function decorate(editor: vs.TextEditor): void
           new vs.Position(line_index, char_index +0),
           new vs.Position(line_index, char_index +1),
         )});
+        break;
+      
+      case "(":
+        ctx.push("function");
+        paren_count++;
+        break;
+      
+      case ")":
+        paren_count--;
+        ctx.pop();
+        break;
+      
+      case "{":
+        ctx.push("block");
+        break;
+
+      case "}":
+        ctx.pop();
         break;
     }
 

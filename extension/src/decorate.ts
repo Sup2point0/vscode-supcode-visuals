@@ -3,16 +3,14 @@ import * as vs from "vscode";
 
 const decorations: Record<string, vs.TextEditorDecorationType> = {
   kebab_case: vs.window.createTextEditorDecorationType({
-    before: {
-      contentText: "-",
-    },
+    before: { contentText: "-", },
     opacity: "0",
     letterSpacing: "-1em",
   }),
   dual_shift: vs.window.createTextEditorDecorationType({
     /* not sure why this isn't exactly 0.5em, but 0.3 seems to give perfect spacing, sooo... */
     letterSpacing: "-0.3em",
-  })
+  }),
 };
 
 
@@ -70,11 +68,17 @@ export function decorate(editor: vs.TextEditor): void
         )});
         break;
       
-      case "|":
       case "=":
+        if (ctx.at(-1) !== "function") break;
+      case "|":
+      case "+":
+      case "-":
+      case "*":
+      case "/":
+      case "%":
+      case "^":
         if (
           selected_lines.has(line_index)
-          || ctx.at(-1) !== "function"
           || char_prev !== " "
           || char_next !== " "
         ) break;
@@ -151,6 +155,7 @@ export function decorate(editor: vs.TextEditor): void
     char_index++;
   }
 
-  editor.setDecorations(decorations.kebab_case, ranges.kebab_case);
-  editor.setDecorations(decorations.dual_shift, ranges.dual_shift);
+  for (let key of Object.keys(decorations)) {
+    editor.setDecorations(decorations[key], ranges[key]);
+  }
 }

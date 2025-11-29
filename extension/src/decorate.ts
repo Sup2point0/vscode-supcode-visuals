@@ -10,6 +10,7 @@ const decorations: Record<string, vs.TextEditorDecorationType> = {
     letterSpacing: "-1em",
   }),
   dual_shift: vs.window.createTextEditorDecorationType({
+    // not sure why this isn't exactly 0.5em, but 0.3 seems to give perfect spacing, sooo...
     letterSpacing: "-0.3em",
   })
 };

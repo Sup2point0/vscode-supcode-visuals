@@ -10,7 +10,7 @@ const decorations: Record<string, vs.TextEditorDecorationType> = {
     letterSpacing: "-1em",
   }),
   dual_shift: vs.window.createTextEditorDecorationType({
-    // not sure why this isn't exactly 0.5em, but 0.3 seems to give perfect spacing, sooo...
+    /* not sure why this isn't exactly 0.5em, but 0.3 seems to give perfect spacing, sooo... */
     letterSpacing: "-0.3em",
   })
 };
@@ -58,7 +58,8 @@ export function decorate(editor: vs.TextEditor): void
       
       case "_":
         if (
-             selected_lines.has(line_index)
+             ctx.at(-1)?.includes("string")
+          || selected_lines.has(line_index)
           || char_prev === "_"
           || char_next === "_"
         ) break;
@@ -104,6 +105,45 @@ export function decorate(editor: vs.TextEditor): void
 
       case "}":
         ctx.pop();
+        break;
+      
+      case '"':
+        if (char_prev === "\\") break;
+
+        if (ctx.at(-1) === 'string(")') {
+          ctx.pop();
+          if (char_prev === '"' && char_next === '"') {
+            ctx.push('string(")-long');
+          }
+        }
+        else if (ctx.at(-1) === 'string(")-long') {
+          if (char_prev === '"' && char_next === '"') {
+            ctx.pop();
+          }
+        }
+        else {
+          ctx.push('string(")');
+        }
+        break;
+      
+      /* yes, gotta repeat this for alternate string delimiters, separately... */
+      case "'":
+        if (char_prev === "\\") break;
+
+        if (ctx.at(-1) === "string(')") {
+          ctx.pop();
+          if (char_prev === "'" && char_next === "'") {
+            ctx.push("string(')-long");
+          }
+        }
+        else if (ctx.at(-1) === "string(')-long") {
+          if (char_prev === "'" && char_next === "'") {
+            ctx.pop();
+          }
+        }
+        else {
+          ctx.push("string(')");
+        }
         break;
     }
 

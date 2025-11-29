@@ -37,13 +37,12 @@ export function decorate(editor: vs.TextEditor): void
   let char_next = source.at(0);
 
   let ctx = [];
-  let paren_count = 0;
 
   while (true)
   {
     char_prev = char;
     char = char_next;
-    char_next = source.at(i+1);
+    char_next = source.at(i + 1);
 
     if (char === undefined) break;
 
@@ -63,13 +62,12 @@ export function decorate(editor: vs.TextEditor): void
         ) break;
 
         ranges.kebab_case.push({ range: new vs.Range(
-          new vs.Position(line_index, char_index +0),
-          new vs.Position(line_index, char_index +1),
+          new vs.Position(line_index, char_index + 0),
+          new vs.Position(line_index, char_index + 1),
         )});
         break;
       
-      case "=":
-        if (ctx.at(-1) !== "function") break;
+      case "=": if (ctx.at(-1) !== "function") break;
       case "|":
       case "+":
       case "-":
@@ -84,33 +82,21 @@ export function decorate(editor: vs.TextEditor): void
         ) break;
 
         ranges.dual_shift.push({ range: new vs.Range(
-          new vs.Position(line_index, char_index -1),
-          new vs.Position(line_index, char_index +0),
+          new vs.Position(line_index, char_index - 1),
+          new vs.Position(line_index, char_index + 0),
         )});
         ranges.dual_shift.push({ range: new vs.Range(
-          new vs.Position(line_index, char_index +0),
-          new vs.Position(line_index, char_index +1),
+          new vs.Position(line_index, char_index + 0),
+          new vs.Position(line_index, char_index + 1),
         )});
         break;
       
-      case "(":
-        ctx.push("function");
-        paren_count++;
-        break;
+      case "(": ctx.push("function"); break;
+      case ")": ctx.pop();            break;
       
-      case ")":
-        paren_count--;
-        ctx.pop();
-        break;
-      
-      case "{":
-        ctx.push("block");
-        break;
+      case "{": ctx.push("block"); break;
+      case "}": ctx.pop();         break;
 
-      case "}":
-        ctx.pop();
-        break;
-      
       case '"':
         if (char_prev === "\\") break;
 

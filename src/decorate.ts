@@ -12,10 +12,12 @@ const decoration = vs.window.createTextEditorDecorationType({
 
 export function decorate(editor: vs.TextEditor): void
 {
+  let selected_lines = new Set(
+    editor.selections.flatMap(s => [s.start.line, s.end.line])
+  );
+
   let source = editor.document.getText();
   let ranges: vs.DecorationOptions[] = [];
-
-
 
   for (let [i, line] of source.split("\n").entries())
   {
@@ -25,9 +27,11 @@ export function decorate(editor: vs.TextEditor): void
       chars
       .map((c, i) => c === "_" ? i : null)
       .filter(i => i !== null);
-    
+        
     for (let idx of indices)
     {
+      if (selected_lines.has(i)) continue;
+
       ranges.push(
         {
           range: new vs.Range(

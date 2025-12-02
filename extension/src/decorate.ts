@@ -33,7 +33,7 @@ export function decorate(editor: vs.TextEditor): void
   let char_index = 0;
 
   let char_prev = undefined;
-  let char = undefined;
+  let char      = undefined;
   let char_next = source.at(0);
 
   let ctx = [];
@@ -59,6 +59,8 @@ export function decorate(editor: vs.TextEditor): void
           || selected_lines.has(line_index)
           || char_prev === "_"
           || char_next === "_"
+          || char_prev === " " && char_next === " "
+          || char_prev === "(" && char_next === ")"
         ) break;
 
         ranges.kebab_case.push({ range: new vs.Range(

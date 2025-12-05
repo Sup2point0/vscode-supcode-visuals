@@ -75,7 +75,6 @@ export function decorate(editor: vs.TextEditor): void
       case "-":
       case "*":
       case "/":
-      case "%":
       case "^":
         if (
           selected_lines.has(line_index)

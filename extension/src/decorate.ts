@@ -57,10 +57,10 @@ export function decorate(editor: vs.TextEditor): void
         if (
              ctx.at(-1)?.includes("string")
           || selected_lines.has(line_index)
-          || char_prev === "_"
-          || char_next === "_"
-          || char_prev === " " && char_next === " "
-          || char_prev === "(" && char_next === ")"
+          || char_prev === "."
+          || char_prev === "_" || char_next === "_"
+          || char_prev === " " || char_next === " "
+          || char_prev === "(" || char_next === ")"
         ) break;
 
         ranges.kebab_case.push({ range: new vs.Range(

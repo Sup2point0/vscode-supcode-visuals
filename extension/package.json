@@ -2,7 +2,7 @@
   "name": "vscode-supcode-visuals",
   "displayName": "supcode Visuals for VSCode",
   "description": "supcode’s text displaying conventions for VSCode: `kebab-case` identifiers, half-spaced ` = `, and more!",
-  "version": "1.1.4",
+  "version": "1.1.7",
   "publisher": "sup2point0",
   "repository": {
     "url": "https://github.com/Sup2point0/vscode-supcode-visuals"
@@ -15,6 +15,7 @@
     "Visualization"
   ],
   "activationEvents": [
+    "onLanguage:csharp",
     "onLanguage:python",
     "onLanguage:javascript",
     "onLanguage:typescript",

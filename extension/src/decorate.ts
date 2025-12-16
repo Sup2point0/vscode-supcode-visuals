@@ -71,7 +71,6 @@ export function decorate(editor: vs.TextEditor): void
         break;
       
       case "=": if (ctx.at(-1) !== "function") break;
-      case "|":
       case "+":
       case "-":
       case "*":

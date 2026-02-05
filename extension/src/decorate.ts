@@ -1,6 +1,6 @@
 import * as vs from "vscode";
 
-import type { Config } from "./extension";
+import type { Config } from "./config";
 
 
 const decorations: Record<string, vs.TextEditorDecorationType> =

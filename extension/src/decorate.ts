@@ -1,7 +1,10 @@
 import * as vs from "vscode";
 
+import type { Config } from "./extension";
 
-const decorations: Record<string, vs.TextEditorDecorationType> = {
+
+const decorations: Record<string, vs.TextEditorDecorationType> =
+{
   kebab_case: vs.window.createTextEditorDecorationType({
     before: { contentText: "-", },
     opacity: "0",
@@ -14,7 +17,7 @@ const decorations: Record<string, vs.TextEditorDecorationType> = {
 };
 
 
-export function decorate(editor: vs.TextEditor): void
+export function decorate(editor: vs.TextEditor, config: Config): void
 {
   let selected_lines = new Set(
     editor.selections.flatMap(s => [s.start.line, s.end.line])
@@ -55,7 +58,8 @@ export function decorate(editor: vs.TextEditor): void
       
       case "_":
         if (
-             ctx.at(-1)?.includes("string")
+          !config.features.kebab_case
+          || ctx.at(-1)?.includes("string")
           || selected_lines.has(line_index)
           || char_prev === "."
           || char_prev === "_" || char_next === "_"
@@ -77,7 +81,8 @@ export function decorate(editor: vs.TextEditor): void
       case "/":
       case "^":
         if (
-          selected_lines.has(line_index)
+          !config.features.dual_shift
+          || selected_lines.has(line_index)
           || char_prev !== " "
           || char_next !== " "
         ) break;

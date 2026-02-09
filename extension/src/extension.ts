@@ -28,7 +28,7 @@ export function activate(ctx: vs.ExtensionContext)
         return;
       }
 
-      decorate(editor, CONFIG);
+      decorate(editor, lang, CONFIG);
     }
   });
 

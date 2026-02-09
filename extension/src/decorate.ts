@@ -1,6 +1,7 @@
 import * as vs from "vscode";
 
 import type { Config } from "./config";
+import { Context as Ctx, ContextStack, COMMENT_SINGLE } from "./context";
 
 
 const decorations: Record<string, vs.TextEditorDecorationType> =
@@ -17,134 +18,155 @@ const decorations: Record<string, vs.TextEditorDecorationType> =
 };
 
 
-export function decorate(editor: vs.TextEditor, config: Config): void
+export function decorate(editor: vs.TextEditor, lang: string, config: Config): void
 {
+  let source = editor.document.getText();
+  if (source === "") return;
+
+  const comment_single = COMMENT_SINGLE[lang];
+  
   let selected_lines = new Set(
     editor.selections.flatMap(s => [s.start.line, s.end.line])
   );
-
-  let source = editor.document.getText();
-  if (source === "") return;
 
   let ranges: Record<string, vs.DecorationOptions[]> = {
     kebab_case: [],
     dual_shift: [],
   }
 
-  let i = 0;
-  let line_index = 0;
-  let char_index = 0;
+  let i        = 0;
+  let line_idx = 0;
+  let char_idx = 0;
 
   let char_prev = undefined;
   let char      = undefined;
   let char_next = source.at(0);
 
-  let ctx = [];
+  let ctx = new ContextStack();
 
-  while (true)
+  while (char_next !== undefined)
   {
     char_prev = char;
-    char = char_next;
-    char_next = source.at(i + 1);
+    char      = char_next;
+    char_next = source.at(i+1);
 
-    if (char === undefined) break;
+    if (char === "\n") {
+      line_idx++;
+      char_idx = -1;
+      ctx.try_pop(Ctx.COMMENT);
+    }
+    else if (ctx.current !== Ctx.COMMENT) {
+      switch (char)
+      {
+        case comment_single[1]:
+          let [prev, _, next] = comment_single;
 
-    switch (char)
-    {
-      case "\n":
-        line_index++;
-        char_index = -1;
-        break;
-      
-      case "_":
-        if (
-          !config.features.kebab_case
-          || ctx.at(-1)?.includes("string")
-          || selected_lines.has(line_index)
-          || char_prev === "."
-          || char_prev === "_" || char_next === "_"
-          || char_prev === " " || char_next === " "
-          || char_prev === "(" || char_next === ")"
-          || char_prev === ")" || char_next === "("
-        ) break;
+          if (
+               (prev !== null && char_prev !== prev)
+            || (next !== null && char_next !== next)
+          ) break;
 
-        ranges.kebab_case.push({ range: new vs.Range(
-          new vs.Position(line_index, char_index + 0),
-          new vs.Position(line_index, char_index + 1),
-        )});
-        break;
-      
-      case "=": if (ctx.at(-1) !== "function") break;
-      case "+":
-      case "-":
-      case "*":
-      case "/":
-      case "^":
-        if (
-          !config.features.dual_shift
-          || selected_lines.has(line_index)
-          || char_prev !== " "
-          || char_next !== " "
-        ) break;
+          ctx.push(Ctx.COMMENT);
+          break;
+        
+        // kebab-casify
+        case "_":
+          if (
+            !config.features.kebab_case
+            || ctx.is_string()
+            || selected_lines.has(line_idx)
+            || char_prev === "."
+            || char_prev === "_" || char_next === "_"
+            || char_prev === " " || char_next === " "
+            || char_prev === "(" || char_next === ")"
+            || char_prev === ")" || char_next === "("
+          ) break;
 
-        ranges.dual_shift.push({ range: new vs.Range(
-          new vs.Position(line_index, char_index - 1),
-          new vs.Position(line_index, char_index + 0),
-        )});
-        ranges.dual_shift.push({ range: new vs.Range(
-          new vs.Position(line_index, char_index + 0),
-          new vs.Position(line_index, char_index + 1),
-        )});
-        break;
-      
-      case "(": ctx.push("function"); break;
-      case ")": ctx.pop();            break;
-      
-      case "{": ctx.push("block"); break;
-      case "}": ctx.pop();         break;
+          ranges.kebab_case.push({
+              range: new vs.Range(
+              new vs.Position(line_idx, char_idx + 0),
+              new vs.Position(line_idx, char_idx + 1),
+            )
+          });
+          break;
+        
+        // DualShift
+        case "=": if (ctx.current !== Ctx.FUNCTION) break;
+        case "+":
+        case "-":
+        case "*":
+        case "/":
+        case "^":
+          if (
+            !config.features.dual_shift
+            || selected_lines.has(line_idx)
+            || char_prev !== " "
+            || char_next !== " "
+          ) break;
 
-      case '"':
-        if (char_prev === "\\") break;
+          ranges.dual_shift.push({
+            range: new vs.Range(
+              new vs.Position(line_idx, char_idx - 1),
+              new vs.Position(line_idx, char_idx + 0),
+            )
+          });
+          ranges.dual_shift.push({
+            range: new vs.Range(
+              new vs.Position(line_idx, char_idx + 0),
+              new vs.Position(line_idx, char_idx + 1),
+            )
+          });
+          break;
+        
+        // context tracking
+        case "(": ctx.push(Ctx.FUNCTION);    break;
+        case ")": ctx.try_pop(Ctx.FUNCTION); break;
+        
+        case "{": ctx.push(Ctx.BLOCK);    break;
+        case "}": ctx.try_pop(Ctx.BLOCK); break;
 
-        if (ctx.at(-1) === 'string(")') {
-          ctx.pop();
-          if (char_prev === '"' && char_next === '"') {
-            ctx.push('string(")-long');
+        // string contexts
+        case '"':
+          if (char_prev === "\\") break;
+
+          if (ctx.try_pop(Ctx.STRING_DOUBLE)) {
+            if (char_prev === '"' && char_next === '"') {
+              ctx.push(Ctx.STRING_DOUBLE_MULTI);
+            }
           }
-        }
-        else if (ctx.at(-1) === 'string(")-long') {
-          if (char_prev === '"' && char_next === '"') {
-            ctx.pop();
+          else if (ctx.current === Ctx.STRING_DOUBLE_MULTI) {
+            if (char_prev === '"' && char_next === '"') {
+              ctx.try_pop(Ctx.STRING_DOUBLE_MULTI);
+            }
           }
-        }
-        else {
-          ctx.push('string(")');
-        }
-        break;
-      
-      /* yes, gotta repeat this for alternate string delimiters, separately... */
-      case "'":
-        if (char_prev === "\\") break;
+          else {
+            ctx.push(Ctx.STRING_DOUBLE);
+          }
+          break;
+        
+        /* yes, gotta repeat this for alternate string delimiters, separately... */
+        case "'":
+          if (char_prev === "\\") break;
 
-        if (ctx.at(-1) === "string(')") {
-          ctx.pop();
-          if (char_prev === "'" && char_next === "'") {
-            ctx.push("string(')-long");
+          if (ctx.try_pop(Ctx.STRING_SINGLE)) {
+            if (char_prev === "'" && char_next === "'") {
+              ctx.push(Ctx.STRING_SINGLE_MULTI);
+            }
           }
-        }
-        else if (ctx.at(-1) === "string(')-long") {
-          if (char_prev === "'" && char_next === "'") {
-            ctx.pop();
+          else if (ctx.current === Ctx.STRING_SINGLE_MULTI) {
+            if (char_prev === "'" && char_next === "'") {
+              ctx.try_pop(Ctx.STRING_SINGLE_MULTI);
+            }
           }
-        }
-        else {
-          ctx.push("string(')");
-        }
-        break;
+          else {
+            ctx.push(Ctx.STRING_SINGLE);
+          }
+          break;
+      }
     }
 
     i++;
-    char_index++;
+    char_idx++;
   }
 
   for (let key of Object.keys(decorations)) {

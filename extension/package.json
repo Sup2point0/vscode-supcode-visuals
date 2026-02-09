@@ -26,15 +26,24 @@
       "properties":
       {
         "supcodeVisuals.languages.enabled": {
-          "type":    "array",
-          "items":   {"type": "string"},
+          "type":   "array",
+          "items":  {
+            "type": "string"
+          },
           "default": [],
           "markdownDescription": "The languages for which supcode visuals are enabled. If none are provided, supcode visuals are enabled for all languages."
         },
         "supcodeVisuals.languages.ignored": {
           "type":    "array",
           "items":   {"type": "string"},
-          "default": ["plaintext", "markdown", "latex", "json", "git-commit", "git-rebase"],
+          "default": [
+            "plaintext",
+            "markdown",
+            "latex",
+            "json",
+            "git-commit",
+            "git-rebase"
+          ],
           "markdownDescription": "The languages for which supcode visuals are disabled. Applies after `#supcodeVisuals.enabledLanguages#`."
         },
 
@@ -58,10 +67,8 @@
     "watch": "tsc -watch -p ./"
   },
   "devDependencies": {
-    "@types/vscode": "^1.106.1",
-    "@types/mocha": "^10.0.10",
     "@types/node": "22.x",
-    "typescript": "^5.9.3",
+    "@types/vscode": "^1.106.1",
     "@vscode/test-cli": "^0.0.12",
     "@vscode/test-electron": "^2.5.2"
   }

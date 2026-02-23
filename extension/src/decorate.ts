@@ -1,13 +1,14 @@
 import * as vs from "vscode";
 
+import { Context as Ctx, ContextStack } from "./context";
+import * as constants from "./constants";
 import type { Config } from "./config";
-import { Context as Ctx, ContextStack, COMMENT_SINGLE } from "./context";
 
 
 const decorations: Record<string, vs.TextEditorDecorationType> =
 {
   kebab_case: vs.window.createTextEditorDecorationType({
-    before: { contentText: "-", },
+    before: { contentText: "-" },
     opacity: "0",
     letterSpacing: "-1em",
   }),
@@ -17,13 +18,12 @@ const decorations: Record<string, vs.TextEditorDecorationType> =
   }),
 };
 
-
 export function decorate(editor: vs.TextEditor, lang: string, config: Config): void
 {
   let source = editor.document.getText();
   if (source === "") return;
 
-  const comment_single = COMMENT_SINGLE[lang];
+  const comment_single = constants.COMMENT_SINGLE[lang] ?? [null, null];
   
   let selected_lines = new Set(
     editor.selections.flatMap(s => [s.start.line, s.end.line])
@@ -54,6 +54,7 @@ export function decorate(editor: vs.TextEditor, lang: string, config: Config): v
       line_idx++;
       char_idx = -1;
       ctx.try_pop(Ctx.COMMENT);
+      ctx.try_pop(Ctx.DEACTIVATE_DUALSHIFT);
     }
     else if (ctx.current !== Ctx.COMMENT) {
       switch (char)
@@ -67,6 +68,16 @@ export function decorate(editor: vs.TextEditor, lang: string, config: Config): v
           ) break;
 
           ctx.push(Ctx.COMMENT);
+          break;
+
+        case " ":
+          if (ctx.current === Ctx.DEACTIVATE_DUALSHIFT) break;
+          if (
+              char_prev === " " && char_next === " "
+            || char_prev === "\n"
+          ) {
+            ctx.push(Ctx.DEACTIVATE_DUALSHIFT);
+          }
           break;
         
         // kebab-casify
@@ -83,7 +94,7 @@ export function decorate(editor: vs.TextEditor, lang: string, config: Config): v
           ) break;
 
           ranges.kebab_case.push({
-              range: new vs.Range(
+            range: new vs.Range(
               new vs.Position(line_idx, char_idx + 0),
               new vs.Position(line_idx, char_idx + 1),
             )
@@ -99,6 +110,7 @@ export function decorate(editor: vs.TextEditor, lang: string, config: Config): v
         case "^":
           if (
             !config.features.dual_shift
+            || ctx.current === Ctx.DEACTIVATE_DUALSHIFT
             || selected_lines.has(line_idx)
             || char_prev !== " "
             || char_next !== " "
@@ -162,6 +174,10 @@ export function decorate(editor: vs.TextEditor, lang: string, config: Config): v
             ctx.push(Ctx.STRING_SINGLE);
           }
           break;
+      }
+
+      if (char !== " ") {
+        ctx.try_pop(Ctx.DEACTIVATE_DUALSHIFT);
       }
     }
 

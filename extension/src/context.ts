@@ -1,42 +1,23 @@
-type Lookaround = [
-  string | null,
-  string,
-  string | null
-];
-
-const COMMENT_STYLES: Record<string, Lookaround> = {
-  SLASH: [null, "/", "/"],
-  HASH:  [null, "#", null]
-};
-
-export const COMMENT_SINGLE: Record<string, Lookaround> = {
-  c:       COMMENT_STYLES.SLASH,
-  haskell: [null, "-", "-"],
-  javascript: COMMENT_STYLES.SLASH,
-    typescript: COMMENT_STYLES.SLASH,
-  python:  COMMENT_STYLES.HASH,
-  ruby:    COMMENT_STYLES.HASH,
-  rust:    COMMENT_STYLES.SLASH,
-};
-
 export enum Context {
-  COMMENT             = 1 << 0,
-  STRING_DOUBLE       = 1 << 1,
-  STRING_SINGLE       = 1 << 2,
-  STRING_DOUBLE_MULTI = 1 << 3,
-  STRING_SINGLE_MULTI = 1 << 4,
-  FUNCTION            = 1 << 5,
-  BLOCK               = 1 << 6,
+  DEACTIVATE_DUALSHIFT = 1 << 0,
+  COMMENT              = 1 << 1,
+  STRING_DOUBLE        = 1 << 2,
+  STRING_SINGLE        = 1 << 3,
+  STRING_DOUBLE_MULTI  = 1 << 4,
+  STRING_SINGLE_MULTI  = 1 << 5,
+  FUNCTION             = 1 << 6,
+  BLOCK                = 1 << 7,
 }
 
 const DISPLAY = {
-  [Context.COMMENT]:             "COMMENT",
-  [Context.STRING_DOUBLE]:       "STRING-DOUBLE",
-  [Context.STRING_SINGLE]:       "STRING-SINGLE",
-  [Context.STRING_DOUBLE_MULTI]: "STRING-DOUBLE-MULTI",
-  [Context.STRING_SINGLE_MULTI]: "STRING-SINGLE-MULTI",
-  [Context.FUNCTION]:            "FUNCTION",
-  [Context.BLOCK]:               "BLOCK",
+  [Context.DEACTIVATE_DUALSHIFT]: "DEACTIVATE-DUALSHIFT",
+  [Context.COMMENT]:              "COMMENT",
+  [Context.STRING_DOUBLE]:        "STRING-DOUBLE",
+  [Context.STRING_SINGLE]:        "STRING-SINGLE",
+  [Context.STRING_DOUBLE_MULTI]:  "STRING-DOUBLE-MULTI",
+  [Context.STRING_SINGLE_MULTI]:  "STRING-SINGLE-MULTI",
+  [Context.FUNCTION]:             "FUNCTION",
+  [Context.BLOCK]:                "BLOCK",
 };
 
 

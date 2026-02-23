@@ -2,7 +2,7 @@
   "name": "vscode-supcode-visuals",
   "displayName": "supcode Visuals for VSCode",
   "description": "supcode’s text displaying conventions for VSCode: `kebab-case` identifiers, half-spaced infix operators, and more!",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "publisher": "sup2point0",
   "repository": {
     "url": "https://github.com/Sup2point0/vscode-supcode-visuals"

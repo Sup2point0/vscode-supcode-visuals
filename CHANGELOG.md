@@ -4,6 +4,13 @@
 <br>
 
 
+## v1.3.1
+
+### Fixes
+- Make string contexts mutually exclusive
+  - This means stuff like `"don't"` no longer corrupts the context
+
+
 ## v1.3.0
 
 ### Fixes

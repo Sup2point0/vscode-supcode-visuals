@@ -44,14 +44,11 @@ export function find_ranges(
 	ignored_lines: Set<number>,
 	lang: string,
 	config: Config,
-): {
-	kebab_case: vs.Range[],
-	dual_shift: vs.Range[],
-}
+): Record<Feature, vs.DecorationOptions[]>
 {
 	const comment_single = constants.COMMENT_SINGLE[lang] ?? [null, null, null];
 
-	let ranges: Record<Feature, vs.Range[]> = {
+	let ranges: Record<Feature, vs.DecorationOptions[]> = {
 		kebab_case: [],
 		dual_shift: [],
 	}
@@ -84,9 +81,9 @@ export function find_ranges(
 		switch (char)
 		{
 			case '"':
-				if (char_prev === "\\") break;
+				if (ctx.top === Ctx.STRING_1 || ctx.top === Ctx.STRING_1_MULTI) break;
 
-				if (ctx.try_pop(Ctx.STRING_DOUBLE)) {
+				if (ctx.try_pop(Ctx.STRING_2)) {
 					if (char_prev === '"' && char_next === '"') {
 						ctx.push(Ctx.STRING_2_MULTI);
 					}
@@ -97,13 +94,13 @@ export function find_ranges(
 					}
 				}
 				else {
-					ctx.push(Ctx.STRING_DOUBLE);
+					ctx.push(Ctx.STRING_2);
 				}
 				break;
 			
 			// yes, gotta repeat this for alternate string delimiters, separately...
 			case "'":
-				if (char_prev === "\\") break;
+				if (ctx.top === Ctx.STRING_2 || ctx.top === Ctx.STRING_2_MULTI) break;
 
 				if (ctx.try_pop(Ctx.STRING_1)) {
 					if (char_prev === "'" && char_next === "'") {
@@ -152,10 +149,13 @@ export function find_ranges(
 					&& /[a-zA-Z0-9]/.test(char_next ?? "")
 				)
 				{
-					ranges.kebab_case.push(new vs.Range(
-						new vs.Position(idx_line, idx_char + 0),
-						new vs.Position(idx_line, idx_char + 1),
-					));
+					ranges.kebab_case.push({
+						range: new vs.Range(
+							new vs.Position(idx_line, idx_char + 0),
+							new vs.Position(idx_line, idx_char + 1),
+						),
+						hoverMessage: `Context Stack: [${ctx.show()}]`,
+					});
 				}
 				break;
 			
@@ -174,14 +174,20 @@ export function find_ranges(
 					|| char_next !== " "
 				) break;
 
-				ranges.dual_shift.push(new vs.Range(
-					new vs.Position(idx_line, idx_char - 1),
-					new vs.Position(idx_line, idx_char + 0),
-				));
-				ranges.dual_shift.push(new vs.Range(
-					new vs.Position(idx_line, idx_char + 0),
-					new vs.Position(idx_line, idx_char + 1),
-				));
+				ranges.dual_shift.push({
+					range: new vs.Range(
+						new vs.Position(idx_line, idx_char - 1),
+						new vs.Position(idx_line, idx_char + 0),
+					),
+					hoverMessage: `Context Stack: [${ctx.show()}]`,
+				});
+				ranges.dual_shift.push({
+					range: new vs.Range(
+						new vs.Position(idx_line, idx_char + 0),
+						new vs.Position(idx_line, idx_char + 1),
+					),
+					hoverMessage: `Context Stack: [${ctx.show()}]`,
+				});
 				break;
 			
 			// context tracking
@@ -198,6 +204,14 @@ export function find_ranges(
 
 		idx_char++;
 	}
+
+	ranges.dual_shift.push({
+		range: new vs.Range(
+			new vs.Position(idx_line, idx_char),
+			new vs.Position(idx_line, idx_char + 1),
+		),
+		hoverMessage: `Final Context Stack: ${ctx.show()}`,
+	});
 
 	return ranges;
 }

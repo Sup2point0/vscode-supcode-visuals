@@ -47,6 +47,10 @@ obj.__field__
 
 obj.a_field
 
+let AN_IDENT
+let an_Ident
+let IDENT_1
+
 
 // DualShift
 1 + 2
@@ -55,6 +59,9 @@ obj.a_field
 
 1 + 2 + 3 + 4 + 5 + 6 + 7 + 8 + 9 + 10 + 11 + 12 + 13 + 14 + 15 + 16
 1+-2+-3+-4+-5+-6+-7+-8+-9+-10+-11+-12+-13+-14+-15+-16
+
+let x = {}
+let { y = 5 } = { y: 1 }
 
 /**
  * Documentation
@@ -86,9 +93,17 @@ class TestClass
 }
 
 
-// both
+// strings
 "no kebab_casify, no Dual + Shift"
 'no kebab_casify, no Dual + Shift'
 
 let but_now_recover = 1 + 1
 
+"don't do it"
+
+let did_you_recover
+
+
+// edge
+1 / 2
+1  /  2

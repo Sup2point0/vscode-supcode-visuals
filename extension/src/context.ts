@@ -1,6 +1,6 @@
 export enum Ctx {
 	COMMENT        = "Comment",
-	STRING_DOUBLE  = `"String"`,
+	STRING_2       = `"String"`,
 	STRING_1       = `'String'`,
 	STRING_2_MULTI = `"""String"""`,
 	STRING_1_MULTI = `'''String'''`,
@@ -65,7 +65,7 @@ export class ContextStack
 		if (ctx == undefined) return false;
 		
 		return (
-				ctx === Ctx.STRING_DOUBLE
+				ctx === Ctx.STRING_2
 			|| ctx === Ctx.STRING_2_MULTI
 			|| ctx === Ctx.STRING_1
 			|| ctx === Ctx.STRING_1_MULTI

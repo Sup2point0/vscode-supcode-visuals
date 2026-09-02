@@ -37,9 +37,9 @@ export function decorate(editor: vs.TextEditor, lang: string, config: Config): v
 		dual_shift: [],
 	}
 
-	let i        = 0;
-	let line_idx = 0;
-	let char_idx = 0;
+	let idx_src  = 0;
+	let idx_line = 0;
+	let idx_char = 0;
 
 	let char_prev = undefined;
 	let char      = undefined;
@@ -51,11 +51,11 @@ export function decorate(editor: vs.TextEditor, lang: string, config: Config): v
 	{
 		char_prev = char;
 		char      = char_next;
-		char_next = source.at(i+1);
+		char_next = source.at(idx_src + 1);
 
 		if (char === "\n") {
-			line_idx++;
-			char_idx = -1;
+			idx_line++;
+			idx_char = -1;
 			ctx.try_pop(Ctx.COMMENT);
 			ctx.try_pop(Ctx.DEACTIVATE_DUALSHIFT);
 		}
@@ -88,7 +88,7 @@ export function decorate(editor: vs.TextEditor, lang: string, config: Config): v
 					if (
 						!config.features.kebab_case
 						|| ctx.is_string()
-						|| selected_lines.has(line_idx)
+						|| selected_lines.has(idx_line)
 						|| char_prev === "."
 						|| char_prev === "_" || char_next === "_"
 						|| char_prev === " " || char_next === " "
@@ -98,8 +98,8 @@ export function decorate(editor: vs.TextEditor, lang: string, config: Config): v
 
 					ranges.kebab_case.push({
 						range: new vs.Range(
-							new vs.Position(line_idx, char_idx + 0),
-							new vs.Position(line_idx, char_idx + 1),
+							new vs.Position(idx_line, idx_char + 0),
+							new vs.Position(idx_line, idx_char + 1),
 						)
 					});
 					break;
@@ -114,21 +114,21 @@ export function decorate(editor: vs.TextEditor, lang: string, config: Config): v
 					if (
 						!config.features.dual_shift
 						|| ctx.top === Ctx.DEACTIVATE_DUALSHIFT
-						|| selected_lines.has(line_idx)
+						|| selected_lines.has(idx_line)
 						|| char_prev !== " "
 						|| char_next !== " "
 					) break;
 
 					ranges.dual_shift.push({
 						range: new vs.Range(
-							new vs.Position(line_idx, char_idx - 1),
-							new vs.Position(line_idx, char_idx + 0),
+							new vs.Position(idx_line, idx_char - 1),
+							new vs.Position(idx_line, idx_char + 0),
 						)
 					});
 					ranges.dual_shift.push({
 						range: new vs.Range(
-							new vs.Position(line_idx, char_idx + 0),
-							new vs.Position(line_idx, char_idx + 1),
+							new vs.Position(idx_line, idx_char + 0),
+							new vs.Position(idx_line, idx_char + 1),
 						)
 					});
 					break;
@@ -184,8 +184,8 @@ export function decorate(editor: vs.TextEditor, lang: string, config: Config): v
 			}
 		}
 
-		i++;
-		char_idx++;
+		idx_src++;
+		idx_char++;
 	}
 
 	for (let key of Object.keys(decorations)) {

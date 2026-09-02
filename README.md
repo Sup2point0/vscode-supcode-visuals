@@ -2,8 +2,12 @@
 
 A VSCode extension providing [supcode](https://github.com/Sup2point0/supcode)’s text rendering features.
 
-- Display all identifiers as `kebab-case` (while leaving source code intact)
-- *DualShift*
+- *kebab-casify*: Display identifiers as `kebab-case`
+- *DualShift*: Display spaces around infix operators as half-width
+
+The changes are *purely visual* – it leaves the underlying source code intact. It just makes the editing experience smoother!
+
+When you interact with a visually modified line, the visual effects vanish, allowing you to still edit the raw source code as normal.
 
 
 <br>
@@ -12,7 +16,7 @@ A VSCode extension providing [supcode](https://github.com/Sup2point0/supcode)’
 ## Features
 
 ### kebab-casify
-Imho `kebab-case` is the most readable and efficient casing convention of them all. Why suffer reading `longStringsOf UltraCondensedText` or `identifiers_with no_separation`.
+Imho `kebab-case` is the most readable and efficient casing convention of them all. Why suffer reading `longStringsOfUltraCondensedText` or `ugly_underscores_below_the_baseline` when you revel in the glorious `long-strings-of-easily-readable-text` and `Abstract-Strategy-Factory-Instance-Provider`?
 
 ### DualShift
 In Python the convention is to not include spaces around `=` in keyword arguments to functions:
@@ -42,6 +46,15 @@ def func(arg, kwarg: str = None, jwarg=False):
 <br>
 
 
-## Why?
+## FAQ
+
+### Why?
+Hey, I have very particular preferences when it comes to editing code ^v^
 
 I made this extension for myself, so ofc I’m not expecting you to agree with my personal preferences!
+
+### Why?
+Reading unreadable code makes me uncomfortable, and it takes a lot of fortitude to ignore it.
+
+### Isn't this cursed?
+Haha, a little at first. You get used to it. And then it's just wonderful.

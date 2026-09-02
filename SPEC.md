@@ -1,11 +1,17 @@
 # Specification
 
-This document describes how supcode visuals *should* work, not how it currently works.
+This document describes how supcode visuals *should* work, NOT how it currently works.
+
+
+<br>
 
 
 ## General
 
 supcode visuals is language-agnostic. Of course, there are many differences between languages; those with exotic syntax like Haskell will inevitably be glitchier. supcode visuals are not recommended for those languages!
+
+
+<br>
 
 
 ## kebab-casify
@@ -36,7 +42,7 @@ kebab-casify applies to all lexical identifiers, such as:
 
 - Variables
 - Constants
-- Functions
+- Function identifiers
 - Function parameters
 - Class fields
 
@@ -62,15 +68,19 @@ kebab-casify does not apply:
 - To trailing underscores
   - `_private_method_()` becomes `_private-method_()`
   - `__very_private_method__()` becomes `__very-private-method__()`
+  - This would result in asymmetry like `_private-method-()` which looks stupid
+
+
+<br>
 
 
 ## DualShift
 
 > [!Note]
-> Half-spaces cannot be rendered in monospace, so take `x=1` to mean `x = 1` with half-spaces.
+> We can’t render half-spaces here, so take `x=1` to denote `x = 1` with half-spaces.
 
 ### Functionality
-Transforms spaces around infix operators into half-width spaces.
+Transforms spaces around single-character binary infix operators into half-width spaces.
 
 ### Applies
 Common targets for DualShift include:
@@ -94,8 +104,16 @@ DualShift does not apply:
 - At the start of a line
   - The following is left untouched:
 
-```
+```hs
   x
 + y
-+ z
+  + z
+```
+
+  - As is this:
+
+```ts
+/**
+ * - Don't DualShift me
+ */
 ```

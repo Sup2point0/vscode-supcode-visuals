@@ -86,16 +86,16 @@ export function decorate(editor: vs.TextEditor, lang: string, config: Config): v
 				// kebab-casify
 				case "_":
 					if (
-						!config.features.kebab_case
+							!config.features.kebab_case
 						|| ctx.is_string()
 						|| selected_lines.has(idx_line)
-						|| char_prev === "."
-						|| char_prev === "_" || char_next === "_"
-						|| char_prev === " " || char_next === " "
-						|| char_prev === "(" || char_next === ")"
-						|| char_prev === ")" || char_next === "("
 					) break;
 
+					if (
+							/[a-zA-Z0-9]/.test(char_prev ?? "")
+						&& /[a-zA-Z0-9]/.test(char_next ?? "")
+					)
+					{
 						ranges.kebab_case.push(new vs.Range(
 							new vs.Position(idx_line, idx_char + 0),
 							new vs.Position(idx_line, idx_char + 1),

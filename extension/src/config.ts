@@ -20,6 +20,8 @@ export interface Config
 	};
 }
 
+export type Feature = keyof Config["features"];
+
 
 export function update_config(): Config
 {

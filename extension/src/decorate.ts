@@ -1,11 +1,11 @@
 import * as vs from "vscode";
 
-import { Ctx as Ctx, ContextStack } from "./context";
+import { Ctx, ContextStack } from "./context";
 import * as constants from "./constants";
-import type { Config } from "./config";
+import type { Config, Feature } from "./config";
 
 
-const decorations: Record<string, vs.TextEditorDecorationType> =
+const decorations: Record<Feature, vs.TextEditorDecorationType> =
 {
 	kebab_case: vs.window.createTextEditorDecorationType({
 		before: { contentText: "-" },
@@ -24,14 +24,34 @@ export function decorate(editor: vs.TextEditor, lang: string, config: Config): v
 {
 	let source = editor.document.getText();
 	if (source === "") return;
-
-	const comment_single = constants.COMMENT_SINGLE[lang] ?? [null, null, null];
 	
 	let selected_lines = new Set(
 		editor.selections.flatMap(s => [s.start.line, s.end.line])
 	);
 
-	let ranges: Record<string, vs.Range[]> = {
+	let ranges = find_ranges(source, selected_lines, lang, config);
+
+	for (let key of Object.keys(decorations)) {
+		editor.setDecorations(decorations[key as Feature], ranges[key as Feature]);
+	}
+}
+
+/**
+ * Find the (start, stop) ranges in `source` to apply supcode visuals, leaving `ignored_lines` untouched.
+ */
+export function find_ranges(
+	source: string,
+	ignored_lines: Set<number>,
+	lang: string,
+	config: Config,
+): {
+	kebab_case: vs.Range[],
+	dual_shift: vs.Range[],
+}
+{
+	const comment_single = constants.COMMENT_SINGLE[lang] ?? [null, null, null];
+
+	let ranges: Record<Feature, vs.Range[]> = {
 		kebab_case: [],
 		dual_shift: [],
 	}
@@ -78,7 +98,7 @@ export function decorate(editor: vs.TextEditor, lang: string, config: Config): v
 				if (
 						!config.features.kebab_case
 					|| ctx.is_string()
-					|| selected_lines.has(idx_line)
+					|| ignored_lines.has(idx_line)
 				) break;
 
 				if (
@@ -103,7 +123,7 @@ export function decorate(editor: vs.TextEditor, lang: string, config: Config): v
 				if (
 					!config.features.dual_shift
 					|| !current_line_started
-					|| selected_lines.has(idx_line)
+					|| ignored_lines.has(idx_line)
 					|| char_prev !== " "
 					|| char_next !== " "
 				) break;
@@ -171,7 +191,5 @@ export function decorate(editor: vs.TextEditor, lang: string, config: Config): v
 		idx_char++;
 	}
 
-	for (let key of Object.keys(decorations)) {
-		editor.setDecorations(decorations[key], ranges[key]);
-	}
+	return ranges;
 }

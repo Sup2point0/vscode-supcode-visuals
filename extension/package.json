@@ -4,6 +4,7 @@
   "description": "supcode’s text displaying conventions for VSCode: `kebab-case` identifiers, half-spaced infix operators, and more!",
   "version": "1.2.1",
   "publisher": "sup2point0",
+
   "repository": {
     "url": "https://github.com/Sup2point0/vscode-supcode-visuals"
   },
@@ -61,15 +62,15 @@
     }
   },
 
-  "scripts": {
+  "scripts":
+  {
     "vscode:prepublish": "npm run compile",
-    "compile": "tsc -p ./",
-    "watch": "tsc -watch -p ./"
+    "compile": "tsc -p ./"
   },
-  "devDependencies": {
+
+  "devDependencies":
+  {
     "@types/node": "22.x",
-    "@types/vscode": "^1.106.1",
-    "@vscode/test-cli": "^0.0.12",
-    "@vscode/test-electron": "^2.5.2"
+    "@types/vscode": "^1.106.1"
   }
 }

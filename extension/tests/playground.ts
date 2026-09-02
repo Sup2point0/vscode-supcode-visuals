@@ -56,7 +56,31 @@ obj.a_field
 1 + 2 + 3 + 4 + 5 + 6 + 7 + 8 + 9 + 10 + 11 + 12 + 13 + 14 + 15 + 16
 1+-2+-3+-4+-5+-6+-7+-8+-9+-10+-11+-12+-13+-14+-15+-16
 
+/**
+ * Documentation
+ * 
+ * - And this
+ * - should not
+ * - be DualShifted
+ */
 function a_func(a_param = null, another_param = 5)
 {
 	return 
+}
+
+class TestClass
+{
+	// to throw you off
+
+	/**
+	 * Documentation
+	 * 
+	 * - That should also
+	 * - not be
+	 * - DualShifted
+	 */
+	a_func(a_param: string = "1 + 2"): "3 + 4"
+	{
+	  return "3 + 4";
+	}
 }

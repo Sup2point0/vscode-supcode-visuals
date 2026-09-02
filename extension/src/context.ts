@@ -1,12 +1,11 @@
 export enum Ctx {
-	DEACTIVATE_DUALSHIFT = "DEACTIVATE-DUALSHIFT",
-	COMMENT              = "COMMENT",
-	STRING_DOUBLE        = "STRING-DOUBLE",
-	STRING_SINGLE        = "STRING-SINGLE",
-	STRING_DOUBLE_MULTI  = "STRING-DOUBLE-MULTI",
-	STRING_SINGLE_MULTI  = "STRING-SINGLE-MULTI",
-	FUNCTION             = "FUNCTION",
-	BLOCK                = "BLOCK",
+	COMMENT        = "Comment",
+	STRING_DOUBLE  = `"String"`,
+	STRING_1       = `'String'`,
+	STRING_2_MULTI = `"""String"""`,
+	STRING_1_MULTI = `'''String'''`,
+	FUNCTION       = "Function()",
+	BLOCK          = "Block",
 }
 
 
@@ -57,7 +56,7 @@ export class ContextStack
 
 	show(): string
 	{
-		return this.#stack.join(" › ");
+		return this.#stack.map(ctx => `\`${ctx}\``).join(" › ");
 	}
 
 	is_string(): boolean
@@ -67,9 +66,9 @@ export class ContextStack
 		
 		return (
 				ctx === Ctx.STRING_DOUBLE
-			|| ctx === Ctx.STRING_DOUBLE_MULTI
-			|| ctx === Ctx.STRING_SINGLE
-			|| ctx === Ctx.STRING_SINGLE_MULTI
+			|| ctx === Ctx.STRING_2_MULTI
+			|| ctx === Ctx.STRING_1
+			|| ctx === Ctx.STRING_1_MULTI
 		);
 	}
 }

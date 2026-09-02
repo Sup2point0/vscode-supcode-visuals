@@ -10,10 +10,9 @@ const decorations: Record<string, vs.TextEditorDecorationType> =
 	kebab_case: vs.window.createTextEditorDecorationType({
 		before: { contentText: "-" },
 		opacity: "0",
-		letterSpacing: "-1em",
+		letterSpacing: "-1ch",
 	}),
 	dual_shift: vs.window.createTextEditorDecorationType({
-		/* not sure why this isn't exactly 0.5em, but 0.3 seems to give perfect spacing, sooo... */
 		letterSpacing: "-0.5ch",
 	}),
 };
@@ -26,7 +25,7 @@ export function decorate(editor: vs.TextEditor, lang: string, config: Config): v
 	let source = editor.document.getText();
 	if (source === "") return;
 
-	const comment_single = constants.COMMENT_SINGLE[lang] ?? [null, null];
+	const comment_single = constants.COMMENT_SINGLE[lang] ?? [null, null, null];
 	
 	let selected_lines = new Set(
 		editor.selections.flatMap(s => [s.start.line, s.end.line])
@@ -37,156 +36,142 @@ export function decorate(editor: vs.TextEditor, lang: string, config: Config): v
 		dual_shift: [],
 	}
 
-	let idx_src  = 0;
+	let ctx = new ContextStack();
+
+	/* NOTE: DualShift uses this to avoid applying at the start of a line */
+	let current_line_started = false;
+
 	let idx_line = 0;
 	let idx_char = 0;
 
-	let char_prev = undefined;
-	let char      = undefined;
-	let char_next = source.at(0);
-
-	let ctx = new ContextStack();
-
-	while (char_next !== undefined)
+	for (let i = 0; i < source.length - 1; i++)
 	{
-		char_prev = char;
-		char      = char_next;
-		char_next = source.at(idx_src + 1);
+		let char_prev = source.at(i - 1);
+		let char      = source.at(i);
+		let char_next = source.at(i + 1);
 
 		if (char === "\n") {
 			idx_line++;
-			idx_char = -1;
-			ctx.try_pop(Ctx.COMMENT);
-			ctx.try_pop(Ctx.DEACTIVATE_DUALSHIFT);
+			idx_char = 0;
+			current_line_started = false;
+			ctx.force_pop(Ctx.COMMENT);
+			continue;
 		}
-		else if (ctx.top !== Ctx.COMMENT) {
-			switch (char)
-			{
-				case comment_single[1]:
-					let [prev, _, next] = comment_single;
+		
+		if (ctx.top === Ctx.COMMENT) continue;
 
-					if (
-							 (prev !== null && char_prev !== prev)
-						|| (next !== null && char_next !== next)
-					) break;
+		switch (char)
+		{
+			case comment_single[1]:
+				let [prev, _, next] = comment_single;
 
-					ctx.push(Ctx.COMMENT);
-					break;
+				if (
+						(prev !== null && char_prev !== prev)
+					|| (next !== null && char_next !== next)
+				) break;
 
-				case " ":
-					if (ctx.top === Ctx.DEACTIVATE_DUALSHIFT) break;
-					if (
-							char_prev === " " && char_next === " "
-						|| char_prev === "\n"
-					) {
-						ctx.push(Ctx.DEACTIVATE_DUALSHIFT);
-					}
-					break;
-				
-				// kebab-casify
-				case "_":
-					if (
-							!config.features.kebab_case
-						|| ctx.is_string()
-						|| selected_lines.has(idx_line)
-					) break;
+				ctx.push(Ctx.COMMENT);
+				break;
+			
+			// kebab-casify
+			case "_":
+				if (
+						!config.features.kebab_case
+					|| ctx.is_string()
+					|| selected_lines.has(idx_line)
+				) break;
 
-					if (
-							/[a-zA-Z0-9]/.test(char_prev ?? "")
-						&& /[a-zA-Z0-9]/.test(char_next ?? "")
-					)
-					{
-						ranges.kebab_case.push(new vs.Range(
-							new vs.Position(idx_line, idx_char + 0),
-							new vs.Position(idx_line, idx_char + 1),
-						));
-					}
-					break;
-				
-				// DualShift
-				case "=": if (ctx.top !== Ctx.FUNCTION) break;
-				case "+":
-				case "-":
-				case "*":
-				case "/":
-				case "^":
-					if (
-						!config.features.dual_shift
-						|| ctx.top === Ctx.DEACTIVATE_DUALSHIFT
-						|| selected_lines.has(idx_line)
-						|| char_prev !== " "
-						|| char_next !== " "
-					) break;
-
-					ranges.dual_shift.push(new vs.Range(
-						new vs.Position(idx_line, idx_char - 1),
-						new vs.Position(idx_line, idx_char + 0),
-					));
-					ranges.dual_shift.push(new vs.Range(
+				if (
+						/[a-zA-Z0-9]/.test(char_prev ?? "")
+					&& /[a-zA-Z0-9]/.test(char_next ?? "")
+				)
+				{
+					ranges.kebab_case.push(new vs.Range(
 						new vs.Position(idx_line, idx_char + 0),
 						new vs.Position(idx_line, idx_char + 1),
 					));
-					break;
-				
-				// context tracking
-				case "(": ctx.push(Ctx.FUNCTION);    break;
-				case ")": ctx.try_pop(Ctx.FUNCTION); break;
-				
-				case "{": ctx.push(Ctx.BLOCK);    break;
-				case "}": ctx.try_pop(Ctx.BLOCK); break;
+				}
+				break;
+			
+			// DualShift
+			case "=": if (ctx.top !== Ctx.FUNCTION) break;
+			case "+":
+			case "-":
+			case "*":
+			case "/":
+			case "^":
+				if (
+					!config.features.dual_shift
+					|| !current_line_started
+					|| selected_lines.has(idx_line)
+					|| char_prev !== " "
+					|| char_next !== " "
+				) break;
 
-				// string contexts
-				case '"':
-					if (char_prev === "\\") break;
+				ranges.dual_shift.push(new vs.Range(
+					new vs.Position(idx_line, idx_char - 1),
+					new vs.Position(idx_line, idx_char + 0),
+				));
+				ranges.dual_shift.push(new vs.Range(
+					new vs.Position(idx_line, idx_char + 0),
+					new vs.Position(idx_line, idx_char + 1),
+				));
+				break;
+			
+			// context tracking
+			case "(": ctx.push(Ctx.FUNCTION);    break;
+			case ")": ctx.try_pop(Ctx.FUNCTION); break;
+			
+			case "{": ctx.push(Ctx.BLOCK);    break;
+			case "}": ctx.try_pop(Ctx.BLOCK); break;
 
-					if (ctx.try_pop(Ctx.STRING_DOUBLE)) {
-						if (char_prev === '"' && char_next === '"') {
-							ctx.push(Ctx.STRING_DOUBLE_MULTI);
-						}
-					}
-					else if (ctx.top === Ctx.STRING_DOUBLE_MULTI) {
-						if (char_prev === '"' && char_next === '"') {
-							ctx.try_pop(Ctx.STRING_DOUBLE_MULTI);
-						}
-					}
-					else {
-						ctx.push(Ctx.STRING_DOUBLE);
-					}
-					break;
-				
-				/* yes, gotta repeat this for alternate string delimiters, separately... */
-				case "'":
-					if (char_prev === "\\") break;
+			// string contexts
+			case '"':
+				if (char_prev === "\\") break;
 
-					if (ctx.try_pop(Ctx.STRING_SINGLE)) {
-						if (char_prev === "'" && char_next === "'") {
-							ctx.push(Ctx.STRING_SINGLE_MULTI);
-						}
+				if (ctx.try_pop(Ctx.STRING_DOUBLE)) {
+					if (char_prev === '"' && char_next === '"') {
+						ctx.push(Ctx.STRING_2_MULTI);
 					}
-					else if (ctx.top === Ctx.STRING_SINGLE_MULTI) {
-						if (char_prev === "'" && char_next === "'") {
-							ctx.try_pop(Ctx.STRING_SINGLE_MULTI);
-						}
+				}
+				else if (ctx.top === Ctx.STRING_2_MULTI) {
+					if (char_prev === '"' && char_next === '"') {
+						ctx.try_pop(Ctx.STRING_2_MULTI);
 					}
-					else {
-						ctx.push(Ctx.STRING_SINGLE);
-					}
-					break;
-			}
+				}
+				else {
+					ctx.push(Ctx.STRING_DOUBLE);
+				}
+				break;
+			
+			/* yes, gotta repeat this for alternate string delimiters, separately... */
+			case "'":
+				if (char_prev === "\\") break;
 
-			if (char !== " ") {
-				ctx.try_pop(Ctx.DEACTIVATE_DUALSHIFT);
-			}
+				if (ctx.try_pop(Ctx.STRING_1)) {
+					if (char_prev === "'" && char_next === "'") {
+						ctx.push(Ctx.STRING_1_MULTI);
+					}
+				}
+				else if (ctx.top === Ctx.STRING_1_MULTI) {
+					if (char_prev === "'" && char_next === "'") {
+						ctx.try_pop(Ctx.STRING_1_MULTI);
+					}
+				}
+				else {
+					ctx.push(Ctx.STRING_1);
+				}
+				break;
 		}
 
-		idx_src++;
+		if (!/\s/.test(char ?? "")) {
+			current_line_started = true;
+		}
+
 		idx_char++;
 	}
 
 	for (let key of Object.keys(decorations)) {
-		editor.setDecorations(
-			decorations[key],
-			ranges[key].map(range => ({ range }))
-		);
+		editor.setDecorations(decorations[key], ranges[key]);
 	}
 }

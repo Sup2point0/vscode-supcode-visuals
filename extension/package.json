@@ -1,9 +1,9 @@
 {
   "name": "vscode-supcode-visuals",
   "displayName": "supcode Visuals for VSCode",
-  "description": "supcode’s text displaying conventions for VSCode: `kebab-case` identifiers, half-spaced infix operators, and more!",
-  "version": "1.2.1",
+  "version": "1.3.0",
   "publisher": "sup2point0",
+  "description": "supcode’s text displaying conventions for VSCode: `kebab-case` identifiers, half-spaced infix operators, and more!",
 
   "repository": {
     "url": "https://github.com/Sup2point0/vscode-supcode-visuals"
@@ -51,12 +51,12 @@
         "supcodeVisuals.features.kebab-Casify": {
           "type":    "boolean",
           "default": true,
-          "markdownDescription": "Convert identifiers to `kebab-case`."
+          "markdownDescription": "Convert identifiers to `kebab-case`.\n\nFor instance, `an_identifier` renders as `an-identifier`. Leading and trailing underscores are left untouched, so `_private_field` remains `_private-field`."
         },
         "supcodeVisuals.features.dualShift": {
           "type":    "boolean",
           "default": true,
-          "markdownDescription": "Convert spaces around operators to half-width spaces."
+          "markdownDescription": "Convert spaces around operators to half-width spaces.\n\nThis means single-character infix operators like `=`, `+`, `*`."
         }
       }
     }

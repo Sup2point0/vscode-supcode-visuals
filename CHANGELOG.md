@@ -4,7 +4,7 @@
 <br>
 
 
-## Next (v1.3.0)
+## v1.3.0
 
 ### Fixes
 - Use `ch` instead of `em` for DualShift spacing to ensure half-spaces are accurate across fonts

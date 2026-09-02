@@ -1,6 +1,6 @@
 import * as vs from "vscode";
 
-import { Context as Ctx, ContextStack } from "./context";
+import { Ctx as Ctx, ContextStack } from "./context";
 import * as constants from "./constants";
 import type { Config } from "./config";
 
@@ -59,7 +59,7 @@ export function decorate(editor: vs.TextEditor, lang: string, config: Config): v
 			ctx.try_pop(Ctx.COMMENT);
 			ctx.try_pop(Ctx.DEACTIVATE_DUALSHIFT);
 		}
-		else if (ctx.current !== Ctx.COMMENT) {
+		else if (ctx.top !== Ctx.COMMENT) {
 			switch (char)
 			{
 				case comment_single[1]:
@@ -74,7 +74,7 @@ export function decorate(editor: vs.TextEditor, lang: string, config: Config): v
 					break;
 
 				case " ":
-					if (ctx.current === Ctx.DEACTIVATE_DUALSHIFT) break;
+					if (ctx.top === Ctx.DEACTIVATE_DUALSHIFT) break;
 					if (
 							char_prev === " " && char_next === " "
 						|| char_prev === "\n"
@@ -105,7 +105,7 @@ export function decorate(editor: vs.TextEditor, lang: string, config: Config): v
 					break;
 				
 				// DualShift
-				case "=": if (ctx.current !== Ctx.FUNCTION) break;
+				case "=": if (ctx.top !== Ctx.FUNCTION) break;
 				case "+":
 				case "-":
 				case "*":
@@ -113,7 +113,7 @@ export function decorate(editor: vs.TextEditor, lang: string, config: Config): v
 				case "^":
 					if (
 						!config.features.dual_shift
-						|| ctx.current === Ctx.DEACTIVATE_DUALSHIFT
+						|| ctx.top === Ctx.DEACTIVATE_DUALSHIFT
 						|| selected_lines.has(line_idx)
 						|| char_prev !== " "
 						|| char_next !== " "
@@ -149,7 +149,7 @@ export function decorate(editor: vs.TextEditor, lang: string, config: Config): v
 							ctx.push(Ctx.STRING_DOUBLE_MULTI);
 						}
 					}
-					else if (ctx.current === Ctx.STRING_DOUBLE_MULTI) {
+					else if (ctx.top === Ctx.STRING_DOUBLE_MULTI) {
 						if (char_prev === '"' && char_next === '"') {
 							ctx.try_pop(Ctx.STRING_DOUBLE_MULTI);
 						}
@@ -168,7 +168,7 @@ export function decorate(editor: vs.TextEditor, lang: string, config: Config): v
 							ctx.push(Ctx.STRING_SINGLE_MULTI);
 						}
 					}
-					else if (ctx.current === Ctx.STRING_SINGLE_MULTI) {
+					else if (ctx.top === Ctx.STRING_SINGLE_MULTI) {
 						if (char_prev === "'" && char_next === "'") {
 							ctx.try_pop(Ctx.STRING_SINGLE_MULTI);
 						}

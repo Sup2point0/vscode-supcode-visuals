@@ -18,6 +18,9 @@ const decorations: Record<string, vs.TextEditorDecorationType> =
   }),
 };
 
+/**
+ * Apply kebab-casify and DualShift to `editor`.
+ */
 export function decorate(editor: vs.TextEditor, lang: string, config: Config): void
 {
   let source = editor.document.getText();

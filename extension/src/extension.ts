@@ -11,33 +11,37 @@ export function activate(ctx: vs.ExtensionContext)
 {
 	console.log("supcode visuals are live!");
 
-  vs.window.onDidChangeTextEditorSelection(e => {
-    let editor = vs.window.activeTextEditor;
-    let langs  = CONFIG.langs;
-
-    if (editor) {
-      let lang = editor.document.languageId;
-
-      if (langs.enabled.at(0) !== undefined) {
-        if (!langs.enabled.includes(lang)) {
-          return;
-        }
-      }
-
-      if (langs.ignored.includes(lang)) {
-        return;
-      }
-
-      decorate(editor, lang, CONFIG);
-    }
-  });
+  vs.window.onDidChangeTextEditorSelection(fire);
 
   vs.workspace.onDidChangeConfiguration(e => {
     if (affects_config(e)) {
       CONFIG = update_config();
+      fire();
     }
   });
 }
+
+function fire()
+{
+  let editor = vs.window.activeTextEditor;
+  if (editor == undefined) return;
+
+  let langs = CONFIG.langs;
+  let lang = editor.document.languageId;
+
+  if (langs.enabled.length > 0) {
+    if (!langs.enabled.includes(lang)) {
+      return;
+    }
+  }
+
+  if (langs.ignored.includes(lang)) {
+    return;
+  }
+
+  decorate(editor, lang, CONFIG);
+}
+
 
 export function deactivate()
 {

@@ -80,6 +80,52 @@ export function find_ranges(
 		
 		if (ctx.top === Ctx.COMMENT) continue;
 
+		// string contexts
+		switch (char)
+		{
+			case '"':
+				if (char_prev === "\\") break;
+
+				if (ctx.try_pop(Ctx.STRING_DOUBLE)) {
+					if (char_prev === '"' && char_next === '"') {
+						ctx.push(Ctx.STRING_2_MULTI);
+					}
+				}
+				else if (ctx.top === Ctx.STRING_2_MULTI) {
+					if (char_prev === '"' && char_next === '"') {
+						ctx.try_pop(Ctx.STRING_2_MULTI);
+					}
+				}
+				else {
+					ctx.push(Ctx.STRING_DOUBLE);
+				}
+				break;
+			
+			// yes, gotta repeat this for alternate string delimiters, separately...
+			case "'":
+				if (char_prev === "\\") break;
+
+				if (ctx.try_pop(Ctx.STRING_1)) {
+					if (char_prev === "'" && char_next === "'") {
+						ctx.push(Ctx.STRING_1_MULTI);
+					}
+				}
+				else if (ctx.top === Ctx.STRING_1_MULTI) {
+					if (char_prev === "'" && char_next === "'") {
+						ctx.try_pop(Ctx.STRING_1_MULTI);
+					}
+				}
+				else {
+					ctx.push(Ctx.STRING_1);
+				}
+				break;
+		}
+
+		if (ctx.is_string()) {
+			idx_char++;
+			continue;
+		}
+
 		switch (char)
 		{
 			case comment_single[1]:
@@ -144,44 +190,6 @@ export function find_ranges(
 			
 			case "{": ctx.push(Ctx.BLOCK);    break;
 			case "}": ctx.try_pop(Ctx.BLOCK); break;
-
-			// string contexts
-			case '"':
-				if (char_prev === "\\") break;
-
-				if (ctx.try_pop(Ctx.STRING_DOUBLE)) {
-					if (char_prev === '"' && char_next === '"') {
-						ctx.push(Ctx.STRING_2_MULTI);
-					}
-				}
-				else if (ctx.top === Ctx.STRING_2_MULTI) {
-					if (char_prev === '"' && char_next === '"') {
-						ctx.try_pop(Ctx.STRING_2_MULTI);
-					}
-				}
-				else {
-					ctx.push(Ctx.STRING_DOUBLE);
-				}
-				break;
-			
-			/* yes, gotta repeat this for alternate string delimiters, separately... */
-			case "'":
-				if (char_prev === "\\") break;
-
-				if (ctx.try_pop(Ctx.STRING_1)) {
-					if (char_prev === "'" && char_next === "'") {
-						ctx.push(Ctx.STRING_1_MULTI);
-					}
-				}
-				else if (ctx.top === Ctx.STRING_1_MULTI) {
-					if (char_prev === "'" && char_next === "'") {
-						ctx.try_pop(Ctx.STRING_1_MULTI);
-					}
-				}
-				else {
-					ctx.push(Ctx.STRING_1);
-				}
-				break;
 		}
 
 		if (!/\s/.test(char ?? "")) {

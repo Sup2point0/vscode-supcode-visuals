@@ -84,3 +84,11 @@ class TestClass
 	  return "3 + 4";
 	}
 }
+
+
+// both
+"no kebab_casify, no Dual + Shift"
+'no kebab_casify, no Dual + Shift'
+
+let but_now_recover = 1 + 1
+

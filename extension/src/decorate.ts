@@ -14,7 +14,7 @@ const decorations: Record<string, vs.TextEditorDecorationType> =
 	}),
 	dual_shift: vs.window.createTextEditorDecorationType({
 		/* not sure why this isn't exactly 0.5em, but 0.3 seems to give perfect spacing, sooo... */
-		letterSpacing: "-0.3em",
+		letterSpacing: "-0.5ch",
 	}),
 };
 
@@ -32,7 +32,7 @@ export function decorate(editor: vs.TextEditor, lang: string, config: Config): v
 		editor.selections.flatMap(s => [s.start.line, s.end.line])
 	);
 
-	let ranges: Record<string, vs.DecorationOptions[]> = {
+	let ranges: Record<string, vs.Range[]> = {
 		kebab_case: [],
 		dual_shift: [],
 	}
@@ -96,12 +96,11 @@ export function decorate(editor: vs.TextEditor, lang: string, config: Config): v
 						|| char_prev === ")" || char_next === "("
 					) break;
 
-					ranges.kebab_case.push({
-						range: new vs.Range(
+						ranges.kebab_case.push(new vs.Range(
 							new vs.Position(idx_line, idx_char + 0),
 							new vs.Position(idx_line, idx_char + 1),
-						)
-					});
+						));
+					}
 					break;
 				
 				// DualShift
@@ -119,18 +118,14 @@ export function decorate(editor: vs.TextEditor, lang: string, config: Config): v
 						|| char_next !== " "
 					) break;
 
-					ranges.dual_shift.push({
-						range: new vs.Range(
-							new vs.Position(idx_line, idx_char - 1),
-							new vs.Position(idx_line, idx_char + 0),
-						)
-					});
-					ranges.dual_shift.push({
-						range: new vs.Range(
-							new vs.Position(idx_line, idx_char + 0),
-							new vs.Position(idx_line, idx_char + 1),
-						)
-					});
+					ranges.dual_shift.push(new vs.Range(
+						new vs.Position(idx_line, idx_char - 1),
+						new vs.Position(idx_line, idx_char + 0),
+					));
+					ranges.dual_shift.push(new vs.Range(
+						new vs.Position(idx_line, idx_char + 0),
+						new vs.Position(idx_line, idx_char + 1),
+					));
 					break;
 				
 				// context tracking
@@ -189,6 +184,9 @@ export function decorate(editor: vs.TextEditor, lang: string, config: Config): v
 	}
 
 	for (let key of Object.keys(decorations)) {
-		editor.setDecorations(decorations[key], ranges[key]);
+		editor.setDecorations(
+			decorations[key],
+			ranges[key].map(range => ({ range }))
+		);
 	}
 }

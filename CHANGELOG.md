@@ -4,6 +4,12 @@
 <br>
 
 
+## v1.3.2
+
+### Fixes
+- Skip adding end-of-file debug decoration unless file ends in newline
+
+
 ## v1.3.1
 
 ### Fixes

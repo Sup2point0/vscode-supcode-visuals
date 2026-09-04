@@ -205,13 +205,15 @@ export function find_ranges(
 		idx_char++;
 	}
 
-	ranges.dual_shift.push({
-		range: new vs.Range(
-			new vs.Position(idx_line, idx_char),
-			new vs.Position(idx_line, idx_char + 1),
-		),
-		hoverMessage: `Final Context Stack: ${ctx.show()}`,
-	});
+	if (source.at(-1) === "\n") {
+		ranges.dual_shift.push({
+			range: new vs.Range(
+				new vs.Position(idx_line, idx_char),
+				new vs.Position(idx_line, idx_char + 1),
+			),
+			hoverMessage: `Final Context Stack: ${ctx.show()}`,
+		});
+	}
 
 	return ranges;
 }

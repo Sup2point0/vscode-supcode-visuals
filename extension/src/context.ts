@@ -2,6 +2,7 @@ export enum Ctx {
 	COMMENT        = "Comment",
 	STRING_2       = `"String"`,
 	STRING_1       = `'String'`,
+	STRING_T       = "`String`",
 	STRING_2_MULTI = `"""String"""`,
 	STRING_1_MULTI = `'''String'''`,
 	FUNCTION       = "Function()",
@@ -59,16 +60,20 @@ export class ContextStack
 		return this.#stack.map(ctx => `\`${ctx}\``).join(" › ");
 	}
 
+	is_not(...ctx: Ctx[]): boolean
+	{
+		return ctx.every(c => this.top !== c);
+	}
+
 	is_string(): boolean
 	{
 		let ctx = this.top;
 		if (ctx == undefined) return false;
 		
 		return (
-				ctx === Ctx.STRING_2
-			|| ctx === Ctx.STRING_2_MULTI
-			|| ctx === Ctx.STRING_1
-			|| ctx === Ctx.STRING_1_MULTI
+				ctx === Ctx.STRING_2 || ctx === Ctx.STRING_2_MULTI
+			|| ctx === Ctx.STRING_1 || ctx === Ctx.STRING_1_MULTI
+			|| ctx === Ctx.STRING_T
 		);
 	}
 }

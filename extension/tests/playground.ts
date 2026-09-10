@@ -100,8 +100,13 @@ class TestClass
 let but_now_recover = 1 + 1
 
 "don't do it"
+let did_you_recover_1
 
-let did_you_recover
+`don't do it`
+let did_you_recover_2
+
+`don\` do it`
+let did_you_recover_3
 
 
 // edge

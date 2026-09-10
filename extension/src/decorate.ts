@@ -67,7 +67,7 @@ export function find_ranges(
 		let char      = source.at(i);
 		let char_next = source.at(i + 1);
 
-		if (char === "\n") {
+		if (char === '\n') {
 			idx_line++;
 			idx_char = 0;
 			current_line_started = false;
@@ -81,7 +81,7 @@ export function find_ranges(
 		switch (char)
 		{
 			case '"':
-				if (ctx.top === Ctx.STRING_1 || ctx.top === Ctx.STRING_1_MULTI) break;
+				if (ctx.is_string() && ctx.is_not(Ctx.STRING_2, Ctx.STRING_2_MULTI)) break;
 
 				if (ctx.try_pop(Ctx.STRING_2)) {
 					if (char_prev === '"' && char_next === '"') {
@@ -100,7 +100,7 @@ export function find_ranges(
 			
 			// yes, gotta repeat this for alternate string delimiters, separately...
 			case "'":
-				if (ctx.top === Ctx.STRING_2 || ctx.top === Ctx.STRING_2_MULTI) break;
+				if (ctx.is_string() && ctx.is_not(Ctx.STRING_1, Ctx.STRING_1_MULTI)) break;
 
 				if (ctx.try_pop(Ctx.STRING_1)) {
 					if (char_prev === "'" && char_next === "'") {
@@ -115,6 +115,11 @@ export function find_ranges(
 				else {
 					ctx.push(Ctx.STRING_1);
 				}
+				break;
+
+			case '`':
+				if (ctx.is_string() && ctx.is_not(Ctx.STRING_T)) break;
+				ctx.pop_or_push(Ctx.STRING_T);
 				break;
 		}
 

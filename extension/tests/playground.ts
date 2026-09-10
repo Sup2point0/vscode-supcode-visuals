@@ -94,9 +94,8 @@ class TestClass
 
 
 // strings
-"no kebab_casify, no Dual + Shift"
-'no kebab_casify, no Dual + Shift'
-
+"no kebab_casify, no Dual + Shift" + 1
+'no kebab_casify, no Dual + Shift' + 1
 let but_now_recover = 1 + 1
 
 "don't do it"
@@ -105,10 +104,28 @@ let did_you_recover_1
 `don't do it`
 let did_you_recover_2
 
-`don\` do it`
+"don\" do it"
 let did_you_recover_3
+'don\' do it'
+let did_you_recover_4
+`don\` do it`
+let did_you_recover_5
+
+
+// comments
+
+// no kebab_case
+// no Dual + Shift
+// don't touch me
+// no kebab_case
+// no Dual + Shift
 
 
 // edge
 1 / 2
 1  /  2
+
+
+// final recovery
+an_ident
+1 + 1

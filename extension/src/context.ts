@@ -1,4 +1,5 @@
 export enum Ctx {
+	ESCAPE         = "\\Escape",
 	COMMENT        = "Comment",
 	STRING_2       = `"String"`,
 	STRING_1       = `'String'`,

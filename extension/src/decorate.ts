@@ -77,6 +77,11 @@ export function find_ranges(
 		
 		if (ctx.top === Ctx.COMMENT) continue;
 
+		if (ctx.try_pop(Ctx.ESCAPE)) {
+			idx_char++;
+			continue;
+		}
+
 		// string contexts
 		switch (char)
 		{
@@ -124,6 +129,9 @@ export function find_ranges(
 		}
 
 		if (ctx.is_string()) {
+			if (char === '\\') {
+				ctx.push(Ctx.ESCAPE);
+			}
 			idx_char++;
 			continue;
 		}

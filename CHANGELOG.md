@@ -4,6 +4,15 @@
 <br>
 
 
+## v1.3.3
+
+### New
+- Handle JS/TS `` `template strings` ``
+
+
+<br>
+
+
 ## v1.3.2
 
 ### Fixes
@@ -19,14 +28,16 @@
 
 ## v1.3.0
 
-### Fixes
-- Use `ch` instead of `em` for DualShift spacing to ensure half-spaces are accurate across fonts
-- Improve kebab-casify handling
-  - Correctly ignore edge cases like `__dunder__`, `__leading`, `[_enclosed_]`
+### New
 - Improve DualShift handling
   - Correctly ignore edge cases like `^\t*` for `/** */` documentation comments
 - Improve string context handling
   - kebab-casify and DualShift correctly deactivate inside strings
+
+### Fixes
+- Use `ch` instead of `em` for DualShift spacing to ensure half-spaces are accurate across fonts
+- Improve kebab-casify handling
+  - Correctly ignore edge cases like `__dunder__`, `__leading`, `[_enclosed_]`
 
 
 <br>

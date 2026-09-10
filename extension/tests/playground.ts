@@ -120,6 +120,9 @@ let did_you_recover_5
 // no kebab_case
 // no Dual + Shift
 
+"// not a comment" + 1
+"still // not a comment" + 1
+
 
 // edge
 1 / 2

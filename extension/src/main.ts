@@ -9,6 +9,7 @@ let CONFIG = update_config();
 
 export function activate(ctx: vs.ExtensionContext)
 {
+	fire();
 	console.log("supcode visuals are live!");
 
 	vs.workspace.onDidChangeTextDocument(fire);

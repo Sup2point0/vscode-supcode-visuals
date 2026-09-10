@@ -4,13 +4,17 @@
 <br>
 
 
+## v1.3.4
+
+### New
+- Handle escapes inside strings
+  - `'don\'t do it'` terminates correctly after `it`, not `don\`
+
+
 ## v1.3.3
 
 ### New
 - Handle JS/TS `` `template strings` ``
-
-
-<br>
 
 
 ## v1.3.2

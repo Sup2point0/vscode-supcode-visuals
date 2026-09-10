@@ -11,6 +11,7 @@ export function activate(ctx: vs.ExtensionContext)
 {
 	console.log("supcode visuals are live!");
 
+	vs.workspace.onDidChangeTextDocument(fire);
 	vs.window.onDidChangeTextEditorSelection(fire);
 
 	vs.workspace.onDidChangeConfiguration(e => {
@@ -21,6 +22,9 @@ export function activate(ctx: vs.ExtensionContext)
 	});
 }
 
+/**
+ * Trigger the extension if appropriate.
+ */
 function fire()
 {
 	let editor = vs.window.activeTextEditor;

@@ -30,7 +30,8 @@ export function update_config(): Config
 	return {
 		langs: {
 			enabled: config.get(CONFIG_LANGS_ENABLED) ?? [],
-			ignored: config.get(CONFIG_LANGS_IGNORED) ?? ["default"],
+			ignored: config.get(CONFIG_LANGS_IGNORED)
+				?? ["plaintext", "markdown", "json"],
 		},
 		features: {
 			kebab_case: config.get(CONFIG_FEAT_KEBAB_CASE) ?? true,

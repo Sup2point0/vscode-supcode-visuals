@@ -46,7 +46,7 @@ export function find_ranges(
 	config: Config,
 ): Record<Feature, vs.DecorationOptions[]>
 {
-	const comment_single = constants.COMMENT_SINGLE[lang] ?? [null, null, null];
+	const comment_single = constants.COMMENT_SINGLE[lang] ?? constants.COMMENT_STYLES.SLASH;
 
 	let ranges: Record<Feature, vs.DecorationOptions[]> = {
 		kebab_case: [],

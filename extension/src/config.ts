@@ -38,7 +38,7 @@ export function update_config(): Config
 		features: {
 			kebab_case: config.get(CONFIG_FEAT_KEBAB_CASE) ?? true,
 			dual_shift: config.get(CONFIG_FEAT_DUAL_SHIFT) ?? true,
-			unspace:    config.get(CONFIG_FEAT_UNSPACE) ?? true,
+			unspace:    config.get(CONFIG_FEAT_UNSPACE) ?? false,
 		}
 	};
 }

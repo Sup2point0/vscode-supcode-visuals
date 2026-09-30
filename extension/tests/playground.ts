@@ -93,6 +93,16 @@ class TestClass
 }
 
 
+// Unspace
+function unspace () {}
+
+while (false) {
+	if (true) {
+		unspace ();
+	}
+}
+
+
 // strings
 "no kebab_casify, no Dual + Shift" + 1
 'no kebab_casify, no Dual + Shift' + 1
@@ -132,3 +142,4 @@ let did_you_recover_5
 // final recovery
 an_ident
 1 + 1
+unspace ()

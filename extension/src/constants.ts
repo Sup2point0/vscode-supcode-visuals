@@ -24,3 +24,12 @@ export const COMMENT_SINGLE: Record<string, Lookaround> = {
 	scss:       COMMENT_STYLES.SLASH,
 	yaml:       COMMENT_STYLES.HASH,
 };
+
+export const KEYWORDS = [
+	"do",
+	"for",
+	"if",
+	"while",
+];
+
+export const KEYWORD_LOOKBEHIND = Math.max(...KEYWORDS.map(keyword => keyword.length));

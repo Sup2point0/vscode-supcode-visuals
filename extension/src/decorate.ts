@@ -182,13 +182,18 @@ export function find_ranges(
 					&& char_next === "("
 				)
 				{
-					ranges.unspace.push({
-						range: new vs.Range(
-							new vs.Position(idx_line, idx_char + 0),
-							new vs.Position(idx_line, idx_char + 1),
-						),
-					})
+					let lookbehind = source.slice(i - constants.KEYWORD_LOOKBEHIND, i);
+					
+					if (!constants.KEYWORDS.some(keyword => lookbehind.includes(keyword))) {
+						ranges.unspace.push({
+							range: new vs.Range(
+								new vs.Position(idx_line, idx_char + 0),
+								new vs.Position(idx_line, idx_char + 1),
+							),
+						});
+					}
 				}
+				break;
 			
 			// DualShift
 			case "=": if (ctx.top !== Ctx.FUNCTION) break;

@@ -1,6 +1,6 @@
 # supcode Visuals for Visual Studio Code
 
-A VSCode extension that renders your source code mor nicely, in line with [supcode](https://github.com/Sup2point0/supcode).
+A VSCode extension that renders your source code more nicely, in line with [supcode](https://github.com/Sup2point0/supcode).
 
 - *kebab-casify*: Display `snake_case` identifiers as `kebab-case`
 - *DualShift*: Display spaces around infix operators as half-width spaces
@@ -115,6 +115,9 @@ It works best with languages like Python, TypeScript, Rust since they have very 
 ### The visuals broke after a certain point in the file!
 The extension uses a quick-and-dirty naive parser to track contexts in the code, so that the visuals aren’t applied in places like string literals.
 
-This context tracking isn’t perfect, so sometimes a context will never be terminated, polluting the stack and hence locking all the visuals.
+This context tracking isn’t perfect, so sometimes a (usually string) context will never be terminated, hence locking all the visuals.
 
 I’m always working to make the context tracking more reliable. I know currently `/* */` comments and `'lifetimes` aren’t handled properly!
+
+
+<br>

@@ -1,14 +1,14 @@
 # supcode Visuals for Visual Studio Code
 
-A VSCode extension providing [supcode](https://github.com/Sup2point0/supcode)’s text rendering features.
+A VSCode extension that renders your source code mor nicely, in line with [supcode](https://github.com/Sup2point0/supcode).
 
 - *kebab-casify*: Display `snake_case` identifiers as `kebab-case`
 - *DualShift*: Display spaces around infix operators as half-width spaces
 - *Unspace*: Display `func_call ()` as `func_call()` for legacy codebases
 
-These changes are *purely visual*, leaving the underlying source code intact. It just makes the reading experience smoother!
+These changes are *purely visual*, so the underlying source code is left completely intact. All it does is make the reading experience smoother!
 
-When you interact with a visually modified line, the visual effects vanish, allowing you to still edit the raw source code as usual.[^unspace]
+When you interact with a visually modified line the visual effects will vanish, allowing you to still edit the raw source code as usual.[^unspace]
 
 [^unspace]: Except for *Unspace*, because you probably aren’t touching the legacy source code so don’t care about what the raw text is.
 
@@ -47,7 +47,7 @@ def func(arg, kwarg: str = None, jwarg=False):
     pass
 ```
 
-*DualShift* takes a compromise between the two by keeping the spaces, but making each of them exactly *half* as wide. This means you still get a small amount of visual separation, while maintaining monospaced text.
+*DualShift* takes a compromise between the two by keeping the spaces, but making each of them exactly *half* as wide. This means you still get a small amount of helpful visual separation. And since 2 half-spaces make a full space, your text stays monospaced.
 
 ### Unspace
 You might encounter ugly code written like this when working with legacy codebases:
@@ -64,6 +64,14 @@ func ();
 void func() {}
 
 func()
+```
+
+It will also correctly ignore keyword constructs; these are left alone:
+
+```c
+while (cond1) {
+    if (cond2) {}
+}
 ```
 
 
@@ -98,3 +106,15 @@ I made this extension for myself, so ofc I’m not expecting you to agree with m
 Haha, just a little, at first. Then you get used to it, and it's just wonderful!
 
 Why not give it a shot and see for yourself? ;)
+
+### What languages are supported?
+supcode Visuals aims to be language-agnostic, since identifiers and operators tend to be broadly similar across languages.
+
+It works best with languages like Python, TypeScript, Rust since they have very ‘basic’ syntax; for funkier languages like Haskell it might break down.
+
+### The visuals broke after a certain point in the file!
+The extension uses a quick-and-dirty naive parser to track contexts in the code, so that the visuals aren’t applied in places like string literals.
+
+This context tracking isn’t perfect, so sometimes a context will never be terminated, polluting the stack and hence locking all the visuals.
+
+I’m always working to make the context tracking more reliable. I know currently `/* */` comments and `'lifetimes` aren’t handled properly!

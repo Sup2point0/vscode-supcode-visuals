@@ -4,6 +4,17 @@
 <br>
 
 
+## v1.4
+
+### New
+- *Unspace* feature to strip spaces between function calls and parentheses
+  - This displays `func_call ()` as `func_call()`, but leaves `if ()`, `while ()`, etc. untouched.
+  - This feature is **disabled by default** – opt in by enabling `supcodeVisuals.features.unspace`.
+
+
+<br>
+
+
 ## v1.3.4
 
 ### New
@@ -30,7 +41,7 @@
   - This means stuff like `"don't"` no longer corrupts the context
 
 
-## v1.3.0
+## v1.3
 
 ### New
 - Improve DualShift handling
@@ -53,7 +64,7 @@
 - Disable DualShift at start of lines
 
 
-## v1.2.0
+## v1.2
 
 ### New
 - Allow configuring which languages to enable extension for
@@ -66,7 +77,7 @@
 <br>
 
 
-## v1.1.0
+## v1.1
 
 ### New
 - Add DualShift
@@ -75,6 +86,6 @@
 <br>
 
 
-## v1.0.0
+## v1.0
 
 Initial release!

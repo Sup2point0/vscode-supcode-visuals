@@ -1,9 +1,9 @@
 {
   "name": "vscode-supcode-visuals",
-  "displayName": "supcode Visuals for VSCode",
-  "version": "1.4.0",
+  "displayName": "supcode Visuals",
+  "version": "1.4.1",
   "publisher": "sup2point0",
-  "description": "supcode’s text displaying conventions for VSCode: `kebab-case` identifiers, half-spaced infix operators, and more!",
+  "description": "supcode’s text displaying conventions: `kebab-case` identifiers, half-spaced infix operators, and more!",
 
   "repository": {
     "url": "https://github.com/Sup2point0/vscode-supcode-visuals"
@@ -45,7 +45,7 @@
             "git-commit",
             "git-rebase"
           ],
-          "markdownDescription": "The languages for which supcode visuals are disabled.\n\nApplies after `#supcodeVisuals.enabled#`."
+          "markdownDescription": "The languages for which supcode visuals are disabled.\n\nApplies after `#supcodeVisuals.languages.enabled#`."
         },
 
         "supcodeVisuals.features.kebab-Casify": {
@@ -69,7 +69,7 @@
 
   "scripts":
   {
-    "vscode:prepublish": "npm run build",
+    "vscode:prepublish": "npm run build && nu -c \"cp ../README.md ../LICENCE .\"",
 
     "build": "tsc -p ./",
     "watch": "tsc -watch -p ./"

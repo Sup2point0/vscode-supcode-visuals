@@ -4,6 +4,12 @@
 <br>
 
 
+## v1.4.1
+
+### Fixes
+- Small fixes in extension metadata
+
+
 ## v1.4
 
 ### New

@@ -1,7 +1,8 @@
-LICENSE
+# copied from root
+README.md
+LICENCE
 
 out
-dist
 node_modules
 .vscode-test/
 *.vsix

@@ -6,6 +6,9 @@
 		{
 			"type": "npm",
 			"script": "watch",
+			"options": {
+				"cwd": "${workspaceFolder}/extension"
+			},
 			"problemMatcher": "$tsc-watch",
 			"isBackground": true,
 			"presentation": {

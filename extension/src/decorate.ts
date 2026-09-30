@@ -5,7 +5,7 @@ import * as constants from "./constants";
 import type { Config, Feature } from "./config";
 
 
-const decorations: Record<Feature, vs.TextEditorDecorationType> =
+const DECORATIONS: Record<Feature, vs.TextEditorDecorationType> =
 {
 	kebab_case: vs.window.createTextEditorDecorationType({
 		before: { contentText: "-" },
@@ -14,6 +14,9 @@ const decorations: Record<Feature, vs.TextEditorDecorationType> =
 	}),
 	dual_shift: vs.window.createTextEditorDecorationType({
 		letterSpacing: "-0.5ch",
+	}),
+	unspace: vs.window.createTextEditorDecorationType({
+		letterSpacing: "-1ch",
 	}),
 };
 
@@ -31,8 +34,8 @@ export function decorate(editor: vs.TextEditor, lang: string, config: Config): v
 
 	let ranges = find_ranges(source, selected_lines, lang, config);
 
-	for (let key of Object.keys(decorations)) {
-		editor.setDecorations(decorations[key as Feature], ranges[key as Feature]);
+	for (let key of Object.keys(DECORATIONS)) {
+		editor.setDecorations(DECORATIONS[key as Feature], ranges[key as Feature]);
 	}
 }
 
@@ -51,6 +54,7 @@ export function find_ranges(
 	let ranges: Record<Feature, vs.DecorationOptions[]> = {
 		kebab_case: [],
 		dual_shift: [],
+		unspace:    [],
 	}
 
 	let ctx = new ContextStack();
@@ -167,10 +171,24 @@ export function find_ranges(
 							new vs.Position(idx_line, idx_char + 0),
 							new vs.Position(idx_line, idx_char + 1),
 						),
-						hoverMessage: `Context Stack: [${ctx.show()}]`,
 					});
 				}
 				break;
+
+			// unspace
+			case " ":
+				if (
+					/[a-zA-z0-9]/.test(char_prev ?? "")
+					&& char_next === "("
+				)
+				{
+					ranges.unspace.push({
+						range: new vs.Range(
+							new vs.Position(idx_line, idx_char + 0),
+							new vs.Position(idx_line, idx_char + 1),
+						),
+					})
+				}
 			
 			// DualShift
 			case "=": if (ctx.top !== Ctx.FUNCTION) break;

@@ -4,6 +4,7 @@ import * as vs from "vscode";
 const CONFIG_NAME            = "supcodeVisuals"
 const CONFIG_FEAT_KEBAB_CASE = "features.kebab-Casify";
 const CONFIG_FEAT_DUAL_SHIFT = "features.dualShift";
+const CONFIG_FEAT_UNSPACE    = "features.unspace";
 const CONFIG_LANGS_ENABLED   = "languages.enabled";
 const CONFIG_LANGS_IGNORED   = "languages.ignored";
 
@@ -11,13 +12,14 @@ const CONFIG_LANGS_IGNORED   = "languages.ignored";
 export interface Config
 {
 	langs: {
-		enabled: string[];
-		ignored: string[];
-	};
+		enabled: string[]
+		ignored: string[]
+	}
 	features: {
-		kebab_case: boolean;
-		dual_shift: boolean;
-	};
+		kebab_case: boolean
+		dual_shift: boolean
+		unspace: boolean
+	}
 }
 
 export type Feature = keyof Config["features"];
@@ -36,6 +38,7 @@ export function update_config(): Config
 		features: {
 			kebab_case: config.get(CONFIG_FEAT_KEBAB_CASE) ?? true,
 			dual_shift: config.get(CONFIG_FEAT_DUAL_SHIFT) ?? true,
+			unspace:    config.get(CONFIG_FEAT_UNSPACE) ?? true,
 		}
 	};
 }

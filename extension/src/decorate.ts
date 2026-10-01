@@ -49,7 +49,8 @@ export function find_ranges(
 	config: Config,
 ): Record<Feature, vs.DecorationOptions[]>
 {
-	const comment_single = constants.COMMENT_SINGLE[lang] ?? constants.COMMENT_STYLES.SLASH;
+	const comment_single = constants.COMMENT_SINGLE[lang] ?? constants.COMMENT_SINGLE_STYLES.SLASH;
+	const comment_multi  = constants.COMMENT_MULTI[lang]  ?? constants.COMMENT_MULTI_STYLES.STAR;
 
 	let ranges: Record<Feature, vs.DecorationOptions[]> = {
 		kebab_case: [],
@@ -86,8 +87,8 @@ export function find_ranges(
 			continue;
 		}
 
-		// string contexts
-		switch (char)
+		// == STRING CONTEXTS == //
+		if (ctx.top !== Ctx.COMMENT_MULTI) switch (char)
 		{
 			case '"':
 				if (ctx.is_string() && ctx.is_not(Ctx.STRING_2, Ctx.STRING_2_MULTI)) break;
@@ -140,19 +141,45 @@ export function find_ranges(
 			continue;
 		}
 
+		// == COMMENT CONTEXTS == //
 		switch (char)
 		{
-			case comment_single[1]:
+			case comment_single[1]: {
 				let [prev, _, next] = comment_single;
 
 				if (
-						(prev !== null && char_prev !== prev)
-					|| (next !== null && char_next !== next)
-				) break;
+						(char_prev === prev || prev === null)
+					&& (char_next === next || next === null)
+				) {
+					ctx.push(Ctx.COMMENT);
+				}
+			}
+			case comment_multi.open[1]: {
+				let [prev, _, next] = comment_multi.open;
 
-				ctx.push(Ctx.COMMENT);
-				break;
-			
+				if (
+						(char_prev === prev || prev === null)
+					&& (char_next === next || next === null)
+				) {
+					ctx.push(Ctx.COMMENT_MULTI);
+				}
+			}
+			case comment_multi.close[1]: {
+				let [prev, _, next] = comment_multi.close;
+
+				if (
+						(char_prev === prev || prev === null)
+					&& (char_next === next || next === null)
+				) {
+					ctx.try_pop(Ctx.COMMENT_MULTI);
+				}
+			}
+		}
+		if (ctx.top === Ctx.COMMENT_MULTI) continue;
+
+		// == FEATURES == //
+		switch (char)
+		{
 			// kebab-casify
 			case "_":
 				if (

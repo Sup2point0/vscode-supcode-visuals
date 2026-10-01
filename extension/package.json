@@ -1,7 +1,7 @@
 {
   "name": "vscode-supcode-visuals",
   "displayName": "supcode Visuals",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "publisher": "sup2point0",
   "description": "supcode’s text displaying conventions: `kebab-case` identifiers, half-spaced infix operators, and more!",
 
@@ -11,10 +11,6 @@
   "engines": {
     "vscode": "^1.106.1"
   },
-  "categories": [
-    "Formatters",
-    "Visualization"
-  ],
   "activationEvents": [
     "onLanguage"
   ],

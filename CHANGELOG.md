@@ -4,6 +4,15 @@
 <br>
 
 
+## v1.4.2
+
+### New
+- Handle multi-line `/* */` comments
+
+### Fixes
+- *DualShift* correctly applies to ` / `
+
+
 ## v1.4.1
 
 ### Fixes

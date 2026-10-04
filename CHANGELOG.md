@@ -4,6 +4,13 @@
 <br>
 
 
+## v1.4.3
+
+### Fixes
+- *Unspace* ignores `return`, `yield`
+- *Unspace* checks for isolated keywords, so it correctly handles identifiers like `next_if` or `check_while`
+
+
 ## v1.4.2
 
 ### New
@@ -11,6 +18,7 @@
 
 ### Fixes
 - *DualShift* correctly applies to ` / `
+- *Unspace* ignores `switch`
 
 
 ## v1.4.1

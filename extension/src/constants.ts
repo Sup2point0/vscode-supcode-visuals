@@ -41,7 +41,9 @@ export const KEYWORDS = [
 	"do",
 	"for",
 	"if",
+	"return",
 	"switch",
+	"yield",
 	"while",
 ];
 export const KEYWORD_LOOKBEHIND = Math.max(...KEYWORDS.map(keyword => keyword.length));

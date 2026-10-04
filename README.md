@@ -1,5 +1,11 @@
 # supcode Visuals for Visual Studio Code
 
+<div align="center">
+
+[Changelog](CHANGELOG.md)&ensp;·&ensp;[Spec](SPEC.md)&ensp;·&ensp;[Marketplace](https://marketplace.visualstudio.com/items?itemName=sup2point0.vscode-supcode-visuals)
+
+</div>
+
 A VSCode extension that renders your source code more nicely, in line with [supcode](https://github.com/Sup2point0/supcode).
 
 - *kebab-casify*: Display `snake_case` identifiers as `kebab-case`

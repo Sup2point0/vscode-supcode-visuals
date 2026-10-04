@@ -98,11 +98,19 @@ class TestClass
 // Unspace
 function unspace () {}
 
-while (false) {
-	if (true) {
-		unspace ();
+function unspaces () {
+	while (false) {
+		if (true) {
+			return (unspace);
+		}
 	}
 }
+
+let not_if = (x: any) => {};
+let not_while = (x: any) => {};
+let not_return;
+
+not_if (not_while (not_return))
 
 
 // strings

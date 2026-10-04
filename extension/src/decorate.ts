@@ -210,8 +210,13 @@ export function find_ranges(
 				)
 				{
 					let lookbehind = source.slice(i - constants.KEYWORD_LOOKBEHIND, i);
+
+					let is_keyword = constants.KEYWORDS.some(keyword => {
+						let boundary = source[i - keyword.length - 1];
+						return lookbehind.endsWith(keyword) && !/[a-zA-z0-9_]/.test(boundary);
+					});
 					
-					if (!constants.KEYWORDS.some(keyword => lookbehind.includes(keyword))) {
+					if (!is_keyword) {
 						ranges.unspace.push({
 							range: new vs.Range(
 								new vs.Position(idx_line, idx_char + 0),

@@ -4,6 +4,13 @@
 <br>
 
 
+## v1.4.4
+
+### Fixes
+- Fix `features.unspace`
+- *Unspace* ignores `let`, `var`, `const`
+
+
 ## v1.4.3
 
 ### Fixes

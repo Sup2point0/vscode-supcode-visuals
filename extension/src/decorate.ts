@@ -205,7 +205,8 @@ export function find_ranges(
 			// unspace
 			case " ":
 				if (
-					/[a-zA-z0-9]/.test(char_prev ?? "")
+					config.features.unspace
+					&& /[a-zA-z0-9]/.test(char_prev ?? "")
 					&& char_next === "("
 				)
 				{

@@ -38,12 +38,15 @@ export const COMMENT_MULTI: Record<string, OpenClose> = {
 };
 
 export const KEYWORDS = [
+	"const",
 	"do",
 	"for",
 	"if",
+	"let",
 	"return",
 	"switch",
-	"yield",
+	"var",
 	"while",
+	"yield",
 ];
 export const KEYWORD_LOOKBEHIND = Math.max(...KEYWORDS.map(keyword => keyword.length));
